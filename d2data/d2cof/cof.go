@@ -53,12 +53,14 @@ func LoadCOF(fileName string, fileProvider d2interface.FileProvider) *COF {
 	priorityLen := result.FramesPerDirection * result.NumberOfDirections * result.NumberOfLayers
 	result.Priority = make([][][]d2enum.CompositeType, result.NumberOfDirections)
 	priorityBytes, _ := streamReader.ReadBytes(priorityLen)
+	priorityIndex := 0
 	for direction := 0; direction < result.NumberOfDirections; direction++ {
 		result.Priority[direction] = make([][]d2enum.CompositeType, result.FramesPerDirection)
 		for frame := 0; frame < result.FramesPerDirection; frame++ {
 			result.Priority[direction][frame] = make([]d2enum.CompositeType, result.NumberOfLayers)
 			for i := 0; i < result.NumberOfLayers; i++ {
-				result.Priority[direction][frame][i] = d2enum.CompositeType(priorityBytes[i])
+				result.Priority[direction][frame][i] = d2enum.CompositeType(priorityBytes[priorityIndex])
+				priorityIndex++
 			}
 		}
 	}
