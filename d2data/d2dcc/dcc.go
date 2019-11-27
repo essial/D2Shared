@@ -47,20 +47,7 @@ func LoadDCC(path string, fileProvider d2interface.FileProvider) DCC {
 	}
 	result.Directions = make([]DCCDirection, result.NumberOfDirections)
 	for i := 0; i < result.NumberOfDirections; i++ {
-		dir := byte(0)
-		switch result.NumberOfDirections {
-		case 1:
-			dir = 0
-		case 4:
-			dir = dccDir4[i]
-		case 8:
-			dir = dccDir8[i]
-		case 16:
-			dir = dccDir16[i]
-		case 32:
-			dir = dccDir32[i]
-		}
-		result.Directions[dir] = CreateDCCDirection(d2common.CreateBitMuncher(fileData, directionOffsets[i]*8), result)
+		result.Directions[i] = CreateDCCDirection(d2common.CreateBitMuncher(fileData, directionOffsets[i]*8), result)
 	}
 	result.valid = true
 	return result
