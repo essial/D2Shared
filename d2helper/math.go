@@ -84,3 +84,8 @@ func GetAngleBetween(p1X, p1Y, p2X, p2Y float64) int {
 	}
 	return iResult
 }
+
+// AlmostEqual returns true if two values are within threshold from each other
+func AlmostEqual(a, b, threshold float64) bool {
+    return math.Abs(a - b) <= threshold
+}
