@@ -56,7 +56,7 @@ func BytesToInt32(b []byte) int32 {
 }
 
 // IsoToScreen converts isometric coordinates to screenspace coordinates
-func IsoToScreen(isoX, isoY, modX, modY int) (int, int) {
+func IsoToScreen(isoX, isoY, modX, modY float64) (float64, float64) {
 	screenX := (isoX - isoY) * 80
 	screenY := (isoX + isoY) * 40
 	return screenX + modX, screenY + modY
