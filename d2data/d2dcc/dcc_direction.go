@@ -142,22 +142,22 @@ func (v *DCCDirection) GenerateFrames(pcd *d2common.BitMuncher) {
 				if (cell.Width != bufferCell.LastWidth) || (cell.Height != bufferCell.LastHeight) {
 					// Different sizes
 					/// TODO: Clear the pixels of the frame cell
-					//for y := 0; y < cell.Height; y++ {
-					//	for x := 0; x < cell.Width; x++ {
-					//		v.PixelData[x+cell.XOffset+((y+cell.YOffset)*frame.Width)] = 0
-					//	}
-					//}
+					for y := 0; y < cell.Height; y++ {
+						for x := 0; x < cell.Width; x++ {
+							v.PixelData[x+cell.XOffset+((y+cell.YOffset)*v.Box.Width)] = 0
+						}
+					}
 				} else {
 					// Same sizes
 					// Copy the old frame cell into the new position
-					//for fy := 0; fy < cell.Height; fy++ {
-					//	for fx := 0; fx < cell.Width; fx++ {
-					//		// Frame (buff.lastx, buff.lasty) -> Frame (cell.offx, cell.offy)
-					//		// Cell (0, 0,) ->
-					//		// blit(dir->bmp, dir->bmp, buff_cell->last_x0, buff_cell->last_y0, cell->x0, cell->y0, cell->w, cell->h );
-					//		v.PixelData[fx+cell.XOffset+((fy+cell.YOffset)*v.Box.Width)] = v.PixelData[fx+bufferCell.LastXOffset+((fy+bufferCell.LastYOffset)*v.Box.Width)]
-					//	}
-					//}
+					for fy := 0; fy < cell.Height; fy++ {
+						for fx := 0; fx < cell.Width; fx++ {
+							// Frame (buff.lastx, buff.lasty) -> Frame (cell.offx, cell.offy)
+							// Cell (0, 0,) ->
+							// blit(dir->bmp, dir->bmp, buff_cell->last_x0, buff_cell->last_y0, cell->x0, cell->y0, cell->w, cell->h );
+							v.PixelData[fx+cell.XOffset+((fy+cell.YOffset)*v.Box.Width)] = v.PixelData[fx+bufferCell.LastXOffset+((fy+bufferCell.LastYOffset)*v.Box.Width)]
+						}
+					}
 					// Copy it again into the final frame image
 					for fy := 0; fy < cell.Height; fy++ {
 						for fx := 0; fx < cell.Width; fx++ {
