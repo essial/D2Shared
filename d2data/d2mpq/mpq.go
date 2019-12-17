@@ -11,17 +11,15 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
-	"sync"
 )
 
 // MPQ represents an MPQ archive
 type MPQ struct {
 	FileName          string
 	File              *os.File
-	HashTableEntries  []HashTableEntry
+	HashEntryMap      HashEntryMap
 	BlockTableEntries []BlockTableEntry
 	Data              Data
-	fileCache         map[string][]byte
 }
 
 // Data Represents a MPQ file
@@ -95,37 +93,25 @@ func (v BlockTableEntry) HasFlag(flag FileFlag) bool {
 	return (v.Flags & flag) != 0
 }
 
-var mpqMutex = sync.Mutex{}
-var mpqCache = make(map[string]*MPQ)
-
 // Load loads an MPQ file and returns a MPQ structure
 func Load(fileName string) (*MPQ, error) {
-	mpqMutex.Lock()
-	defer mpqMutex.Unlock()
-	cached := mpqCache[fileName]
-	if cached != nil {
-		return cached, nil
-	}
-	result := &MPQ{
-		FileName:  fileName,
-		fileCache: make(map[string][]byte),
-	}
-	var file *os.File
+	result := &MPQ{FileName: fileName}
+
 	var err error
 	if runtime.GOOS == "linux" {
-		file, err = openIgnoreCase(fileName)
+		result.File, err = openIgnoreCase(fileName)
 	} else {
-		file, err = os.Open(fileName)
+		result.File, err = os.Open(fileName)
 	}
+
 	if err != nil {
 		return nil, err
 	}
-	result.File = file
-	err = result.readHeader()
-	if err != nil {
+
+	if err := result.readHeader(); err != nil {
 		return nil, err
 	}
-	mpqCache[fileName] = result
+
 	return result, nil
 }
 
@@ -180,7 +166,7 @@ func (v *MPQ) loadHashTable() {
 	}
 	decrypt(hashData, hashString("(hash table)", 3))
 	for i := uint32(0); i < v.Data.HashTableEntries; i++ {
-		v.HashTableEntries = append(v.HashTableEntries, HashTableEntry{
+		v.HashEntryMap.Insert(&HashTableEntry{
 			NamePartA: hashData[i*4],
 			NamePartB: hashData[(i*4)+1],
 			// TODO: Verify that we're grabbing the right high/lo word for the vars below
@@ -255,25 +241,11 @@ func hashString(key string, hashType uint32) uint32 {
 	return seed1
 }
 
-func (v MPQ) getFileHashEntry(fileName string) (HashTableEntry, error) {
-	hashA := hashString(fileName, 1)
-	hashB := hashString(fileName, 2)
-
-	for idx, hashEntry := range v.HashTableEntries {
-		if hashEntry.NamePartA != hashA || hashEntry.NamePartB != hashB {
-			continue
-		}
-
-		return v.HashTableEntries[idx], nil
-	}
-	return HashTableEntry{}, errors.New("file not found")
-}
-
 // GetFileBlockData gets a block table entry
 func (v MPQ) getFileBlockData(fileName string) (BlockTableEntry, error) {
-	fileEntry, err := v.getFileHashEntry(fileName)
-	if err != nil || fileEntry.BlockIndex >= uint32(len(v.BlockTableEntries)) {
-		return BlockTableEntry{}, err
+	fileEntry, found := v.HashEntryMap.Find(fileName)
+	if !found || fileEntry.BlockIndex >= uint32(len(v.BlockTableEntries)) {
+		return BlockTableEntry{}, errors.New("file not found")
 	}
 	return v.BlockTableEntries[fileEntry.BlockIndex], nil
 }
@@ -287,16 +259,11 @@ func (v *MPQ) Close() {
 }
 
 func (v MPQ) FileExists(fileName string) bool {
-	_, err := v.getFileHashEntry(fileName)
-	return err == nil
+	return v.HashEntryMap.Contains(fileName)
 }
 
 // ReadFile reads a file from the MPQ and returns a memory stream
 func (v MPQ) ReadFile(fileName string) ([]byte, error) {
-	cached := v.fileCache[fileName]
-	if cached != nil {
-		return cached, nil
-	}
 	fileBlockData, err := v.getFileBlockData(fileName)
 	if err != nil {
 		return []byte{}, err
@@ -309,7 +276,6 @@ func (v MPQ) ReadFile(fileName string) ([]byte, error) {
 	}
 	buffer := make([]byte, fileBlockData.UncompressedFileSize)
 	mpqStream.Read(buffer, 0, fileBlockData.UncompressedFileSize)
-	v.fileCache[fileName] = buffer
 	return buffer, nil
 }
 
