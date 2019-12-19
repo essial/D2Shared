@@ -37,7 +37,7 @@ func LoadCOF(fileName string, fileProvider d2interface.FileProvider) *COF {
 		layer := CofLayer{}
 		layer.Type = d2enum.CompositeType(streamReader.GetByte())
 		layer.Shadow = streamReader.GetByte()
-		streamReader.SkipBytes(1) // Unknown
+		layer.Selectable = streamReader.GetByte() != 0
 		layer.Transparent = streamReader.GetByte() != 0
 		layer.DrawEffect = d2enum.DrawEffect(streamReader.GetByte())
 		weaponClassStr, _ := streamReader.ReadBytes(4)
