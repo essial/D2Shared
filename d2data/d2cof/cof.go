@@ -14,6 +14,7 @@ type COF struct {
 	NumberOfDirections int
 	FramesPerDirection int
 	NumberOfLayers     int
+	Speed              int
 	CofLayers          []CofLayer
 	CompositeLayers    map[d2enum.CompositeType]int
 	AnimationFrames    []d2enum.AnimationFrame
@@ -30,7 +31,9 @@ func LoadCOF(fileName string, fileProvider d2interface.FileProvider) *COF {
 	result.NumberOfLayers = int(streamReader.GetByte())
 	result.FramesPerDirection = int(streamReader.GetByte())
 	result.NumberOfDirections = int(streamReader.GetByte())
-	streamReader.SkipBytes(25) // Skip 25 unknown bytes...
+	streamReader.SkipBytes(21) // Skip 21 unknown bytes...
+	result.Speed = int(streamReader.GetByte())
+	streamReader.SkipBytes(3)
 	result.CofLayers = make([]CofLayer, result.NumberOfLayers)
 	result.CompositeLayers = make(map[d2enum.CompositeType]int, 0)
 	for i := 0; i < result.NumberOfLayers; i++ {
