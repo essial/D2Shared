@@ -2,6 +2,20 @@ package d2helper
 
 import "math"
 
+func MinInt(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
+}
+
+func MaxInt(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
+}
+
 // Min returns the lower of two values
 func Min(a, b uint32) uint32 {
 	if a < b {
@@ -87,5 +101,5 @@ func GetAngleBetween(p1X, p1Y, p2X, p2Y float64) int {
 
 // AlmostEqual returns true if two values are within threshold from each other
 func AlmostEqual(a, b, threshold float64) bool {
-    return math.Abs(a - b) <= threshold
+	return math.Abs(a-b) <= threshold
 }

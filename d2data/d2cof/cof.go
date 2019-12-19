@@ -3,8 +3,6 @@ package d2cof
 import (
 	"strings"
 
-	"github.com/OpenDiablo2/D2Shared/d2common/d2interface"
-
 	"github.com/OpenDiablo2/D2Shared/d2common/d2enum"
 
 	"github.com/OpenDiablo2/D2Shared/d2common"
@@ -20,12 +18,8 @@ type COF struct {
 	Priority           [][][]d2enum.CompositeType
 }
 
-func LoadCOF(fileName string, fileProvider d2interface.FileProvider) *COF {
+func LoadCOF(fileData []byte) (*COF, error) {
 	result := &COF{}
-	fileData := fileProvider.LoadFile(fileName)
-	if len(fileData) == 0 {
-		return result
-	}
 	streamReader := d2common.CreateStreamReader(fileData)
 	result.NumberOfLayers = int(streamReader.GetByte())
 	result.FramesPerDirection = int(streamReader.GetByte())
@@ -64,5 +58,5 @@ func LoadCOF(fileName string, fileProvider d2interface.FileProvider) *COF {
 			}
 		}
 	}
-	return result
+	return result, nil
 }
