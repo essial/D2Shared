@@ -258,4 +258,25 @@ const (
 	// --- Skill Data ---
 
 	Missiles = "/data/global/excel/Missiles.txt"
+
+	// --- Palettes ---
+
+	PaletteAct1      = "/data/global/palette/act1/pal.dat"
+	PaletteAct2      = "/data/global/palette/act2/pal.dat"
+	PaletteAct3      = "/data/global/palette/act3/pal.dat"
+	PaletteAct4      = "/data/global/palette/act4/pal.dat"
+	PaletteAct5      = "/data/global/palette/act5/pal.dat"
+	PaletteEndGame   = "/data/global/palette/endgame/pal.dat"
+	PaletteEndGame2  = "/data/global/palette/endgame2/pal.dat"
+	PaletteFechar    = "/data/global/palette/fechar/pal.dat"
+	PaletteLoading   = "/data/global/palette/loading/pal.dat"
+	PaletteMenu0     = "/data/global/palette/menu0/pal.dat"
+	PaletteMenu1     = "/data/global/palette/menu1/pal.dat"
+	PaletteMenu2     = "/data/global/palette/menu2/pal.dat"
+	PaletteMenu3     = "/data/global/palette/menu3/pal.dat"
+	PaletteMenu4     = "/data/global/palette/menu4/pal.dat"
+	PaletteSky       = "/data/global/palette/sky/pal.dat"
+	PaletteStatic    = "/data/global/palette/static/pal.dat"
+	PaletteTrademark = "/data/global/palette/trademark/pal.dat"
+	PaletteUnits     = "/data/global/palette/units/pal.dat"
 )

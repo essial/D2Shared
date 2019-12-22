@@ -3,7 +3,6 @@ package d2ds1
 import (
 	"github.com/OpenDiablo2/D2Shared/d2common"
 	"github.com/OpenDiablo2/D2Shared/d2common/d2enum"
-	"github.com/OpenDiablo2/D2Shared/d2common/d2interface"
 	"github.com/OpenDiablo2/D2Shared/d2data"
 	"github.com/OpenDiablo2/D2Shared/d2data/d2datadict"
 	"github.com/OpenDiablo2/D2Shared/d2helper"
@@ -26,14 +25,13 @@ type DS1 struct {
 	SubstitutionGroups         []SubstitutionGroup
 }
 
-func LoadDS1(path string, fileProvider d2interface.FileProvider) DS1 {
+func LoadDS1(fileData []byte) DS1 {
 	ds1 := DS1{
 		NumberOfFloors:             1,
 		NumberOfWalls:              1,
 		NumberOfShadowLayers:       1,
 		NumberOfSubstitutionLayers: 0,
 	}
-	fileData := fileProvider.LoadFile(path)
 	br := d2common.CreateStreamReader(fileData)
 	ds1.Version = br.GetInt32()
 	ds1.Width = br.GetInt32() + 1
